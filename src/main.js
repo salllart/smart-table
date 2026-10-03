@@ -43,7 +43,7 @@ async function render(action) {
     let state = collectState();
     let query = {};
     // @todo: использование
-    // result = applySearching(result, state, action);
+    query = applySearching(query, state, action);
     query = applyFiltering(query, state, action);
     // result = applySorting(result, state, action);
     query = applyPagination(query, state, action);
@@ -51,6 +51,7 @@ async function render(action) {
     const { total, items } = await api.getRecords(query);
 
     updatePagination(total, query);
+    console.log(query);
     sampleTable.render(items);
 }
 
