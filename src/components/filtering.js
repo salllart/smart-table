@@ -56,7 +56,16 @@ export function initFiltering(elements, indexes) {
         Object.keys(elements).forEach(key => {
             if (elements[key]) {
                 if (['INPUT', 'SELECT'].includes(elements[key].tagName) && elements[key].value) { // ищем поля ввода в фильтре с непустыми данными
-                    filter[`filter[${elements[key].name}]`] = elements[key].value; // чтобы сформировать в query вложенный объект фильтра
+                    const regexDateTest = /^\d{4}(?:\W\d{2}(?:\W\d{2})?)?$/; // проверяем что в пользовтелем указан хотя бы год
+                    const regexDateExec = /^(\d{4})\W?(\d{2})?\W?(\d{2})?$/; // регулярное выражение для извлечение года, месяца и дня
+                    if (elements[key].name === 'date' && regexDateTest.test(elements[key].value)) { // если поле - дата, проверяем что в дате указан хотя бы год
+                        const date = regexDateExec.exec(elements[key].value);
+                        // преобразовываем дату для сервера
+                        filter[`filter[${elements[key].name}]`] = `${date[1]}-${date[2] || "**"}-${date[3] || "**"}`
+                    } else {
+                        filter[`filter[${elements[key].name}]`] = elements[key].value; // чтобы сформировать в query вложенный объект фильтра
+                    }
+                    
                 }
             }
         })
